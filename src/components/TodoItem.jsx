@@ -6,7 +6,7 @@ import {
 } from 'assets/images';
 import clsx from 'clsx';
 import { useRef } from 'react';
-import { toHaveDescription } from '@testing-library/jest-dom/dist/matchers';
+
 
 const StyledTaskItem = styled.div`
   min-height: 52px;
@@ -139,7 +139,8 @@ const TodoItem = ({todo, onToggleDone, onSave, onDelete, onChangeMode}) => {
         defaultValue={todo.title} />
       </div>
       <div className="task-item-action ">
-        <button className="btn-reset btn-destroy icon"></button>
+        <button className="btn-reset btn-destroy icon" 
+        onClick ={() =>{onDelete?.(todo.id)}}></button>
       </div>
     </StyledTaskItem>
   );
