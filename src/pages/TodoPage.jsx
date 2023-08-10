@@ -1,69 +1,69 @@
 import { Footer, Header, TodoCollection, TodoInput } from 'components';
 import { useState } from 'react';
-const dummyTodos = [
-  {
-    title: 'Learn react-router',
-    isDone: true,
-    id: 1,
-  },
-  {
-    title: 'Learn to create custom hooks',
-    isDone: false,
-    id: 2,
-  },
-  {
-    title: 'Learn to use context',
-    isDone: true,
-    id: 3,
-  },
-  {
-    title: 'Learn to implement auth',
-    isDone: false,
-    id: 4,
-  },
-];
+import { useEffect } from 'react';
+import { getTodos, createTodo } from '../api/todos.js';
+
 
 const TodoPage = () => {
   const [inputValue, setInputValue] = useState('');
-  const [todos, setTodos] = useState(dummyTodos);
+  const [todos, setTodos] = useState([]);
 
   const handleChange = (value) => {
     setInputValue(value);
   };
 
-  const handleAddTodo = () => {
+  const handleAddTodo = async() => {
     if (inputValue.length === 0) {
       return;
     }
+    try{
+      const data = await createTodo({
+      title:inputValue,
+      isDone:false,
+    });
+
     setTodos((prevTodos) => {
       return [
         ...prevTodos,
         {
-          id: Math.random() * 100,
-          title: inputValue,
-          isDone: false,
+          id: data.id,
+          title: data.title,
+          isDone: data.isDone,
+          isEdit:false,
         },
       ];
     });
     setInputValue('');
+    }catch (error) {
+      console.error(error)
+    }
   };
 
   //捕捉使用者的 enter/esc 按鍵事件
-  const handleKeyDown = () => {
+  const handleKeyDown = async() => {
     if (inputValue.length === 0) {
       return;
     }
-    setTodos((prevTodos) => {
-      return [
-        ...prevTodos,
-        {
-          id: Math.random() * 100,
-          title: inputValue,
-          isDone: false,
-        },
-      ];
-    });
-    setInputValue('');
+    try {
+      const data = await createTodo({
+        title: inputValue,
+        isDone: false,
+      });
+      setTodos((prevTodos) => {
+        return [
+          ...prevTodos,
+          {
+            id: data.id,
+            title: data.title,
+            isDone: data.isDone,
+            isEdit: false,
+          },
+        ];
+      });
+      setInputValue('');
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleToggleDone = (id) => {
@@ -118,6 +118,21 @@ const TodoPage = () => {
       )
     })
   }
+
+ useEffect(() => {
+   const getTodosAsync = async () => {
+     try {
+       const todos = await getTodos();
+
+       setTodos(todos.map((todo) => ({ ...todo, isEdit: false })));
+     } catch (error) {
+       console.error(error);
+     }
+   };
+   getTodosAsync();
+ }, []); //第二個參數是用來設定dependency，這裡留空
+
+ 
 
   return (
     <div>
