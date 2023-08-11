@@ -2,17 +2,17 @@
   "todos": [
     {
       "title": "Learn react-router",
-      "isDone": true,
+      "isDone": false,
       "id": 1
     },
     {
       "title": "Learn to create custom hooks",
-      "isDone": false,
+      "isDone": true,
       "id": 2
     },
     {
       "title": "Learn to use context",
-      "isDone": true,
+      "isDone": false,
       "id": 3
     },
     {
@@ -22,8 +22,13 @@
     },
     {
       "title": "Learn  postman",
-      "isDone": false,
+      "isDone": true,
       "id": 5
+    },
+    {
+      "title": "exercise",
+      "isDone": true,
+      "id": 6
     }
   ]
 }
