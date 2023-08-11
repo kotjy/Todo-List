@@ -1,12 +1,14 @@
 import { Footer, Header, TodoCollection, TodoInput } from 'components';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { getTodos, createTodo } from '../api/todos.js';
-
+import { getTodos, createTodo, patchTodo, deleteTodo } from '../api/todos.js';
+import { useNavigate } from 'react-router-dom';
+import { checkPermission } from '../api/auth.js';
 
 const TodoPage = () => {
   const [inputValue, setInputValue] = useState('');
   const [todos, setTodos] = useState([]);
+  const navigate = useNavigate();
 
   const handleChange = (value) => {
     setInputValue(value);
@@ -66,8 +68,16 @@ const TodoPage = () => {
     }
   };
 
-  const handleToggleDone = (id) => {
-    setTodos((prevTodos) => {
+
+  const handleToggleDone =async (id) => {
+    const currentTodo = todos.find((todo) => todo.id ===id)
+   //用id查找當下要toggle的項目並存在currentTodo中
+    try{
+      await patchTodo({
+        id,
+        isDone:!currentTodo.isDone,
+      })
+      setTodos((prevTodos) => {
       return prevTodos.map((todo) => {
         if (todo.id === id) {
           return {
@@ -79,7 +89,11 @@ const TodoPage = () => {
         return todo; //return其他todo
       });
     });
-  };
+  }catch(error){
+    console.error(error);
+  }
+    }
+    
 
   const handleChangeMode = ({ id, isEdit }) => {
     setTodos((prevTodos) => {
@@ -96,8 +110,13 @@ const TodoPage = () => {
   };
 
   
-  const handleSave = ({ id, title }) => {
-    setTodos((prevTodos) => {
+  const handleSave = async({ id, title }) => {
+    try{
+      await patchTodo({
+        id,
+        title,
+      })
+setTodos((prevTodos) => {
       return prevTodos.map((todo) => {
         if (todo.id === id) {
           return {
@@ -109,14 +128,23 @@ const TodoPage = () => {
         return todo;
       });
     });
+    } catch (error){
+      console.error(error);
+    }
   };
 
-  const handleDelete = (id) =>{
+  const handleDelete = async(id) =>{
+    try{
+     await deleteTodo(id) //用id選出要刪除的項目
     setTodos((prevTodos) => {
       return prevTodos.filter(todo =>
       todo.id !== id
       )
     })
+    }catch(error){
+      console.error(error);
+    }
+   
   }
 
  useEffect(() => {
@@ -132,7 +160,23 @@ const TodoPage = () => {
    getTodosAsync();
  }, []); //第二個參數是用來設定dependency，這裡留空
 
- 
+
+ useEffect(() => {
+   const checkTokenIsValid = async () => {
+     const authToken = localStorage.getItem('authToken'); //取出token
+     if (!authToken) {
+       navigate('/login')
+     }
+     const result = await checkPermission(authToken); //用checkPermission查看token是否有效，這個函式會新增一個布林值，確認為true才允許導向/todos 
+     if (!result) {
+       navigate('/login');
+     }
+   };
+   checkTokenIsValid();
+ }, [navigate]); 
+
+
+
 
   return (
     <div>
