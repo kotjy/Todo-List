@@ -1,5 +1,5 @@
-import clsx from 'clsx';
 import styled from 'styled-components';
+import clsx from 'clsx';
 
 const StyledAddTodoContainer = styled.div`
   min-height: 52px;
@@ -68,7 +68,7 @@ const StyledAddTodoActionContainer = styled.div`
     }
   }
 `;
-const TodoInput = ({inputValue, onChange, onKeyDown, onAddTodo}) => {
+const TodoInput = ({ inputValue, onChange, onKeyDown, onAddTodo }) => {
   return (
     <StyledAddTodoContainer
       className={clsx('', { active: inputValue.length > 0 })}
@@ -80,8 +80,8 @@ const TodoInput = ({inputValue, onChange, onKeyDown, onAddTodo}) => {
           type="text"
           placeholder="新增工作"
           value={inputValue}
-          onChange={(e) => {
-            onChange?.(e.target.value);
+          onChange={(event) => {
+            onChange?.(event.target.value);
           }}
           onKeyDown={(event) => {
             if (event.key === 'Enter') {
