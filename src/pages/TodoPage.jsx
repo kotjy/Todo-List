@@ -161,7 +161,7 @@ setTodos((prevTodos) => {
  }, []); //第二個參數是用來設定dependency，這裡留空
 
 
- useEffect(() => {
+ useEffect(() => { 
    const checkTokenIsValid = async () => {
      const authToken = localStorage.getItem('authToken'); //取出token
      if (!authToken) {

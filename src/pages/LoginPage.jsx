@@ -58,7 +58,7 @@ useEffect(() => {
     if (!authToken) {
       return;
     }
-    const result = await checkPermission(authToken);
+    const result = await checkPermission(authToken); //用checkPermission查看token是否有效，這個函式會新增一個布林值，確認為true才允許導向/todo
     if (result) {
       navigate('/todos');
     }
@@ -67,7 +67,7 @@ useEffect(() => {
   checkTokenIsValid();
 }, [navigate]);
 
-  return ( //用checkPermission查看token是否有效，這個函式會新增一個布林值，確認為true才允許導向/todo
+  return ( 
     <AuthContainer>
       <div>
         <ACLogoIcon />
