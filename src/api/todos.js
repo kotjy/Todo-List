@@ -20,10 +20,29 @@ export const createTodo = async (payloud) => {
     });
     return res.data;
    }catch(error) {
-    console.log('[Create Todo failed]:', error)
+    console.error('[Create Todo failed]:', error)
    }
 };
 
-export const patchTodo =() =>{};
+export const patchTodo = async (payloud) =>{
+  const {id, title, isDone} = payloud;
 
-export const deleteTodo =() =>{};
+  try{
+    const res = await axios.patch(`${baseUrl}/todos/${id}`, {
+      title,
+      isDone
+    }) ;
+    return res.data
+  }catch(error){
+    console.error('[Patch Todo failed]:', error);
+  }
+};
+
+export const deleteTodo = async(id) =>{
+  try{
+    const res = await axios.delete(`${baseUrl}/todos)${id}`)
+    return res.data;
+  } catch (error){
+    console.error(`[Delete Todo failed]:` ,error)
+  }
+};
