@@ -8,28 +8,28 @@ import {
 import { ACLogoIcon } from 'assets/images';
 import { AuthInput } from 'components';
 import { Link, useNavigate } from 'react-router-dom';
-import { login , checkPermission} from '../api/auth';
 import Swal from 'sweetalert2'
+import { useAuth } from 'contexts/AuthContext';
 
 const LoginPage = () => {
 const [username, setUsername] = useState('')
 const [password, setPassword] = useState('')
 const navigate = useNavigate();
 
+const { login, isAuththenticated } = useAuth();
 
 const handleClick = async() =>{
-  if(username === 0){
+  if(username.length === 0){
     return ;
   }
-  if (password === 0) {
+  if (password.length === 0) {
     return;
   }
   //觸發登入可以拿到success 
-  const {success, authToken} = await login({
+  const success = await login({
     username, password
   })
   if(success){
-    localStorage.setItem('authToken', authToken);
 
  // 登入成功訊息
     Swal.fire({
@@ -53,19 +53,11 @@ const handleClick = async() =>{
 
 
 useEffect(() => {
-  const checkTokenIsValid = async () => {
-    const authToken = localStorage.getItem('authToken');
-    if (!authToken) {
-      return;
-    }
-    const result = await checkPermission(authToken); //用checkPermission查看token是否有效，這個函式會新增一個布林值，確認為true才允許導向/todo
-    if (result) {
-      navigate('/todos');
-    }
-  };
+  if (isAuththenticated){
+    navigate('/todos')
+  }
+  },[navigate, isAuththenticated])
 
-  checkTokenIsValid();
-}, [navigate]);
 
   return ( 
     <AuthContainer>
@@ -86,7 +78,7 @@ useEffect(() => {
       <AuthInputContainer>
         <AuthInput
           type="password"
-          label="密碼" for
+          label="密碼" 
           placeholder="請輸入密碼"
           value={password}
           onChange={(passwordInputValue) => setPassword(passwordInputValue)}

@@ -8,15 +8,17 @@ import { ACLogoIcon } from 'assets/images';
 import { AuthInput } from 'components';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { register, checkPermission } from '../api/auth';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from 'contexts/AuthContext';
 
 const SignUpPage = () => {
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] =useState('')
   const navigate = useNavigate();
+
+  const { register, isAuththenticated} = useAuth();
 
   const handleClick = async() =>{
     if(username.length === 0){
@@ -28,10 +30,9 @@ const SignUpPage = () => {
     if(password.length === 0){
       return;
     }
-    const {success, authToken} = await register({username, email, password})
-    if(success){ //利用success屬性來確認是否成功
-    localStorage.setItem('authToken', authToken);
+    const success = await register({username, email, password})
 
+    if(success){ //利用success屬性來確認是否成功
  // 登入成功訊息
     Swal.fire({
         position: 'top', //出現位子
@@ -52,19 +53,11 @@ const SignUpPage = () => {
     });
   }
 
-  useEffect( () =>{
-   const checkTokenIsValid = async () =>{
-    const authToken = localStorage.getItem('authToken'); //取出token
-    if(!authToken){ //如果不存在就停留在頁面
-      return;
+  useEffect(() => {
+    if (isAuththenticated) {
+      navigate('/todos');
     }
-    const result = await checkPermission(authToken) //用checkPermission查看token是否有效
-    if(result) {
-      navigate('/todos') 
-    }
-   };
-   checkTokenIsValid();
-  }, [navigate])
+  }, [navigate, isAuththenticated]);
 
 
 
@@ -87,7 +80,7 @@ const SignUpPage = () => {
       <AuthInputContainer>
         <AuthInput
           label="Email"
-          placeholder="請輸入email"
+          placeholder="請輸入 email"
           value={email}
           onChange={(emailInputValue) => setEmail(emailInputValue)}
         />
@@ -95,6 +88,7 @@ const SignUpPage = () => {
 
       <AuthInputContainer>
         <AuthInput
+          type="password"
           label="密碼"
           placeholder="請輸入密碼"
           value={password}

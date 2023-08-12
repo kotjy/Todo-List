@@ -9,7 +9,6 @@ const TodoCollection = ({
 }) => {
   return (
     <div>
-     
      {todos.map(todo => {
       return (
         <TodoItem

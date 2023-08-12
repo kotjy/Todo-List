@@ -21,7 +21,7 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) =>{
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [payload, setPayload] =useState(null)
-  const { pathname} = useLocation();
+  const { pathname } = useLocation();
 
   useEffect(() => {
     const checkTokenIsValid = async () => {
@@ -46,22 +46,23 @@ export const AuthProvider = ({ children }) =>{
   }, [pathname]);
 
   return (
-  <AuthContext.Provider value={{ 
+  <AuthContext.Provider 
+  value={{ 
     isAuthenticated , 
     currentMember:payload &&{
       id:payload.sub,
       name:payload.name
     },
 
-    register :async (data)=>{
+    register : async (data)=>{
       const {success, authToken} = await register({
         username:data.username,
         email:data.email,
         password:data.password,
       });
-      const temPayload = jwt.decode(authToken);
-      if(temPayload){
-        setPayload(temPayload);
+      const tempPayload = jwt.decode(authToken);
+      if(tempPayload){
+        setPayload(tempPayload);
         setIsAuthenticated(true);
         localStorage.setItem('authToken', authToken);
       }else{

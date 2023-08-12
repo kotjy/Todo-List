@@ -2,6 +2,23 @@ import axios from 'axios'
 
 const baseUrl = 'http://localhost:3001'; 
 
+const axiosInstance = axios.create({
+  baseURL: baseUrl,
+});
+
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
+
 export const getTodos = async () => {
   try {
     const res = await axios.get(`${baseUrl}/todos`);
@@ -24,8 +41,8 @@ export const createTodo = async (payloud) => {
    }
 };
 
-export const patchTodo = async (payloud) =>{
-  const {id, title, isDone} = payloud;
+export const patchTodo = async (payload) =>{
+  const {id, title, isDone} = payload;
 
   try{
     const res = await axios.patch(`${baseUrl}/todos/${id}`, {

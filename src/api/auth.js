@@ -19,6 +19,7 @@ export const login = async ({username, password}) =>{
     return data;
   }catch(error) {
     console.error('[Login Failed]:', error)
+    return{ success: false};
   }
 }
 
@@ -37,6 +38,7 @@ export const register = async ({username, email, password}) =>{
     return data;
   }catch(error){
     console.error('[Register Failed]:', error)
+     return { success: false };
   }
 }
 

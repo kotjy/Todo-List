@@ -3,12 +3,13 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import { getTodos, createTodo, patchTodo, deleteTodo } from '../api/todos.js';
 import { useNavigate } from 'react-router-dom';
-import { checkPermission } from '../api/auth.js';
+import { useAuth } from 'contexts/AuthContext.jsx';
 
 const TodoPage = () => {
   const [inputValue, setInputValue] = useState('');
   const [todos, setTodos] = useState([]);
   const navigate = useNavigate();
+  const {isAuththenticated, currentMember} = useAuth();
 
   const handleChange = (value) => {
     setInputValue(value);
@@ -35,6 +36,7 @@ const TodoPage = () => {
         },
       ];
     });
+
     setInputValue('');
     }catch (error) {
       console.error(error)
@@ -116,7 +118,7 @@ const TodoPage = () => {
         id,
         title,
       })
-setTodos((prevTodos) => {
+     setTodos((prevTodos) => {
       return prevTodos.map((todo) => {
         if (todo.id === id) {
           return {
@@ -158,22 +160,14 @@ setTodos((prevTodos) => {
      }
    };
    getTodosAsync();
- }, []); //第二個參數是用來設定dependency，這裡留空
+  }, []); //第二個參數是用來設定dependency，這裡留空
 
 
- useEffect(() => { 
-   const checkTokenIsValid = async () => {
-     const authToken = localStorage.getItem('authToken'); //取出token
-     if (!authToken) {
-       navigate('/login')
-     }
-     const result = await checkPermission(authToken); //用checkPermission查看token是否有效，這個函式會新增一個布林值，確認為true才允許導向/todos 
-     if (!result) {
-       navigate('/login');
-     }
-   };
-   checkTokenIsValid();
- }, [navigate]); 
+ useEffect(() => {
+   if (!isAuththenticated) {
+     navigate('/login');
+   }
+ }, [navigate, isAuththenticated]); 
 
 
 
@@ -181,7 +175,7 @@ setTodos((prevTodos) => {
   return (
     <div>
       TodoPage
-      <Header />
+      <Header username={currentMember?.name} />
       <TodoInput
         inputValue={inputValue}
         onChange={handleChange}
@@ -195,7 +189,7 @@ setTodos((prevTodos) => {
         onSave={handleSave}
         onDelete={handleDelete}
       />
-      <Footer numberOfTodos ={todos.length} />
+      <Footer numberOfTodos={todos.length} />
     </div>
   );
 };
